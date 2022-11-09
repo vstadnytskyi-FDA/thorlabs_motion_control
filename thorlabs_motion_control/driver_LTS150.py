@@ -1,6 +1,7 @@
 """
 """
 
+from sysconfig import get_scheme_names
 import clr
 clr.AddReference("System")
 
@@ -76,16 +77,25 @@ class LongTravelStage():
 
     def move_to(self,pos):
         """
+        moves to specifid position
         """
         self.device.MoveTo(Decimal(pos),0)
 
-    def get_postiion(self):
+    def get_position(self):
         """
         returns current position
         """
         clr.AddReference("System")
         from System import Decimal
         return  Decimal.ToDouble(self.device.DevicePosition)
+
+    def set_position(self, value):
+        """
+        sets new position
+        """
+        self.move_to(pos = value)
+
+    position = property(get_position, set_position)
 
     def get_backlash(self):
         """
