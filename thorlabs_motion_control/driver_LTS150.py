@@ -49,6 +49,7 @@ class LongTravelStage():
         self.device = self.initialize_device(serial)
 
     def kill(self):
+        self.device.StopPolling()
         self.device.StopImmediate()
         self.device.Disconnect()
         del self
@@ -66,6 +67,7 @@ class LongTravelStage():
         device.EnableDevice()
         config = device.LoadMotorConfiguration(serial)
         deviceInfo = device.GetDeviceInfo()
+        device.StartPolling(0)
         return device
 
     def print_positions(device):
@@ -81,11 +83,14 @@ class LongTravelStage():
     def is_homed(self):
         return device.device.Status.IsHomed
 
-    def move_to(self,pos):
+    def move_to(self,pos, stop_first = False):
         """
         moves to specifid position
         """
-        self.device.MoveTo(Decimal(pos),0)
+        if stop_first:
+            self.stop_immediate()
+        if not self.is_busy:
+            self.device.MoveTo(Decimal(pos),0)
 
     def get_position(self):
         """
@@ -97,7 +102,8 @@ class LongTravelStage():
 
     def set_position(self, value):
         """
-        sets new position
+        sets new position.
+        If stage is moving, stage is stopped and new position is set.
         """
         self.move_to(pos = value)
 
@@ -108,6 +114,18 @@ class LongTravelStage():
         returns current backlash settings
         """
         return Decimal.ToDouble(device.device.GetBacklash())
+
+    def get_is_busy(self):
+        """
+        """
+        return self.device.IsDeviceBusy
+    is_busy = property(get_is_busy)
+
+    def stop_immediate(self):
+        """
+        stops any motion immediately 
+        """
+        self.device.StopImmediate()
 
     def disconnect(self):
         """
