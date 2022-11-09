@@ -10,13 +10,19 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import random  # only used for dummy data
+import os
+
+# adding relative path to the directory with all the DLLs that are now build into the repository
+path = os.path.abspath(__file__)
+head,tail = os.path.split(path)
+sys.path.append(os.path.join(head,'ThorLabsDLLs'))
 
 from System import String
 from System import Decimal
 from System.Collections import *
 
 # constants
-sys.path.append(r"C:\Program Files\Thorlabs\Kinesis")
+
 serial = '45252134'
 
 clr.AddReference("Thorlabs.MotionControl.Controls")
